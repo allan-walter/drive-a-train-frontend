@@ -1,6 +1,9 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
 import { App } from './app/app';
+import { getConfig } from './app/app.config';
+import { Config } from './app/packages/common/config';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+fetch('./config/dev.json').then(async (config) => {
+  const json = (await config.json()) as Config;
+  bootstrapApplication(App, getConfig(json)).catch((err) => console.error(err));
+});

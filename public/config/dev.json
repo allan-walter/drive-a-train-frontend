@@ -1,0 +1,8 @@
+{
+  "baseEndpoint": "https://localhost:7211",
+  "websocketEndpoint": "ws://localhost:7211/hubs/video",
+  "videoEndpoint": "ws://localhost:5127/ws/video",
+
+  "povVideoEndpoint": "ws://localhost:5127/ws/video/pov",
+  "birdsEyeVideoEndpoint": "ws://localhost:5127/ws/video/birdsEye"
+}

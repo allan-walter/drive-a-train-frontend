@@ -1,0 +1,16 @@
+<nav class="bg-gray-200 border-b-gray-700 border-b p-3">
+  <div class="mx-auto max-w-3xl flex justify-between">
+    <div>
+      <a href="/" class="btn">Home</a>
+      <a href="/about" class="btn">About</a>
+      <a href="/settings" class="btn">Settings</a>
+    </div>
+    <div>
+      @if (appService.$isLoggedIn()) {
+        <button (click)="logout()">Logout</button>
+      } @else {
+        <a [routerLink]="'auth/login'" class="btn btn-white">Login</a>
+      }
+    </div>
+  </div>
+</nav>
