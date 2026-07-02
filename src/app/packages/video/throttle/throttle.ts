@@ -63,6 +63,7 @@ export class Throttle {
       e.preventDefault();
     } else if (e.code == 'Space') {
       throttle.valueAsNumber = 0;
+      this.overrideThrottle.set(0);
       this.send();
       e.preventDefault();
     }
