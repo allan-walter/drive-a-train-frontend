@@ -26,13 +26,14 @@ export class Throttle {
     });
 
     void this.connection.start();
-    window.addEventListener('keydown', this.handler, { passive: false });
+    window.addEventListener('keydown', (e) => this.handler(e), { passive: false });
   }
 
   handler(e: KeyboardEvent) {
     // Up and down for normal throttle. Can do super admin override with right and left which ignores any detected blockers
     const throttle = this.throttle().nativeElement;
     const step = 0.05;
+    console.log(e);
     if (e.key === 'ArrowUp') {
       if (throttle.valueAsNumber == 0) {
         this.reverse.set(false);
