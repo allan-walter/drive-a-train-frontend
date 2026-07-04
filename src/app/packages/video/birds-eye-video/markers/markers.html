@@ -1,0 +1,56 @@
+<div class="w-full h-full">
+  <canvas #canvas class="w-full h-full" [width]="videoService.data().info.width"
+          [height]="videoService.data().info.height"></canvas>
+
+  @for (connection of railConnections(); track connection.addressOne) {
+    @let pos = getPos(connection.midpoint);
+
+    <button
+      class="uncouple-btn"
+      [style.left.%]="pos.x"
+      [style.top.%]="pos.y"
+    >
+ <span class="text-3xl text-black bg-white rounded-full relative top-[-26px] p-2" (click)="uncouple(connection)">
+        <fa-icon [icon]="faSplit"></fa-icon>
+      </span>
+    </button>
+  }
+</div>
+
+<!--{#each units.map(s => ({-->
+<!--unit: s,-->
+<!--front: s.front != null ? getPos(s.front.position) : null,-->
+<!--back: s.back != null ? getPos(s.back.position) : null-->
+<!--})) as s (s.unit.def.address)}-->
+<!--{#if s.front != null}-->
+<!--<button onclick={() => couple(s.unit.def.address,s.unit.frontCouplerIndex)} class="absolute btn bg-green-500!"-->
+<!--style="-->
+<!--left: {s.front.x}%;-->
+<!--top: {s.front.y}%;-->
+<!--transform: translate(-50%, -50%);"-->
+<!--&gt;+-->
+<!--</button>-->
+<!--{/if}-->
+<!--{#if s.back != null}-->
+<!--<button onclick={() => couple(s.unit.def.address,s.unit.reverseCouplerIndex)} class="absolute btn"-->
+<!--style="-->
+<!--left: {s.back.x}%;-->
+<!--top: {s.back.y}%;-->
+<!--transform: translate(-50%, -50%);"-->
+<!--&gt;+-->
+<!--</button>-->
+<!--{/if}-->
+<!--{/each}-->
+<!--{#if structures != null}-->
+<!--{#each structures.map(s => ({ structure: s, pos: getPos(s.position) })) as s (s.structure.name)}-->
+<!--<div class="absolute"-->
+<!--     style="-->
+<!--					  left: {s.pos.x}%;-->
+<!--						top: {s.pos.y}%;-->
+<!--						transform: rotate({s.structure.rotation}deg)"-->
+<!--&gt;-->
+<!--  <div class="w-2 rounded-full aspect-square bg-black"></div>-->
+<!--  <Turnout structure={s.structure}></Turnout>-->
+<!--</div>-->
+<!--{/each}-->
+<!--{/if}-->

@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+.uncouple-btn {
+  @apply rounded-full border-[8px] border-white w-[150px] aspect-square absolute flex flex-col items-center;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    @apply opacity-75;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
