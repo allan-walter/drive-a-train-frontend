@@ -48,7 +48,7 @@ export class Video {
   ngOnInit() {
     new JSMpeg.Player(this.url(), {
       canvas: this.canvas().nativeElement,
-      preserveDrawingBuffer: true,
+      // preserveDrawingBuffer: true,
       onVideoDecode: () => {
         // videoPlayed = true;
         // canvas.width = 500
