@@ -1,15 +1,11 @@
-<div #container class="relative h-full bg-black">
+<div class="relative h-full bg-black">
   <app-video [size]="videoService.data().info!" [url]="config.birdsEyeVideoEndpoint"></app-video>
 
-
-  <div class="h-full w-full flex items-center justify-center absolute left-0 top-0">
-    <div #overlay class="w-full h-full relative">
-      <!--      <Markers bind:throttleLimits></Markers>-->
-      <app-markers></app-markers>
-    </div>
+  <div id="markers" class="absolute">
+    <app-markers></app-markers>
   </div>
 
-  <div class="absolute left-0 top-0">
-    <!--    <Translate></Translate>-->
-  </div>
+  <!--    <div class="absolute left-0 top-0">-->
+  <!--          <Translate></Translate>-->
+  <!--    </div>-->
 </div>

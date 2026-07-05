@@ -14,29 +14,4 @@ export class BirdsEyeVideo {
   videoService = inject(VideoService);
   config = inject(Config);
 
-  container = viewChild.required<HTMLCanvasElement>('container');
-  overlay = viewChild.required<HTMLCanvasElement>('overlay');
-
-  ngOnInit() {
-    // TODO remove on destory
-    window.addEventListener('resize', () => this.resizeCanvas());
-  }
-
-  resizeCanvas() {
-    const aspect = this.videoService.data().info!.width / this.videoService.data().info!.height;
-
-    const parentWidth = this.container().clientWidth;
-    const parentHeight = this.container().clientHeight;
-
-    let newWidth = parentWidth;
-    let newHeight = parentWidth / aspect;
-
-    if (newHeight > parentHeight) {
-      newHeight = parentHeight;
-      newWidth = parentHeight * aspect;
-    }
-
-    this.overlay().style.width = newWidth + 'px';
-    this.overlay().style.height = newHeight + 'px';
-  }
 }

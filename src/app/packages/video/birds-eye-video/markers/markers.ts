@@ -69,6 +69,8 @@ export class Markers {
     });
 
     void this.connection.start();
+
+    // this.canvas().nativeElement.style.aspectRatio = `${this.videoService.data().info.width} / ${this.videoService.data().info.height}`;
   }
 
   uncouple(connection: Connection) {

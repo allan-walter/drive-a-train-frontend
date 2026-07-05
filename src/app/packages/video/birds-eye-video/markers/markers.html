@@ -1,20 +1,21 @@
-<div class="w-full h-full">
-  <canvas #canvas class="w-full h-full" [width]="videoService.data().info.width"
-          [height]="videoService.data().info.height"></canvas>
+<div class="w-full h-full bg-orange-400 opacity-30">
 
-  @for (connection of railConnections(); track connection.addressOne) {
-    @let pos = getPos(connection.midpoint);
+<!--  <canvas #canvas id="markers" class="w-full h-full" [width]="videoService.data().info.width"-->
+<!--          [height]="videoService.data().info.height"></canvas>-->
 
-    <button
-      class="uncouple-btn"
-      [style.left.%]="pos.x"
-      [style.top.%]="pos.y"
-    >
- <span class="text-3xl text-black bg-white rounded-full relative top-[-26px] p-2" (click)="uncouple(connection)">
-        <fa-icon [icon]="faSplit"></fa-icon>
-      </span>
-    </button>
-  }
+  <!--  @for (connection of railConnections(); track connection.addressOne) {-->
+  <!--    @let pos = getPos(connection.midpoint);-->
+
+  <!--    <button-->
+  <!--      class="uncouple-btn"-->
+  <!--      [style.left.%]="pos.x"-->
+  <!--      [style.top.%]="pos.y"-->
+  <!--    >-->
+  <!-- <span class="text-3xl text-black bg-white rounded-full relative top-[-26px] p-2" (click)="uncouple(connection)">-->
+  <!--        <fa-icon [icon]="faSplit"></fa-icon>-->
+  <!--      </span>-->
+  <!--    </button>-->
+  <!--  }-->
 </div>
 
 <!--{#each units.map(s => ({-->
