@@ -1,3 +1,4 @@
 <div>
-  <input #throttle value="0" type="range" min="0" max="1" step="0.05" (change)="send()" />
+  <input #throttle value="0" type="range" min="0" [max]="videoService.data().info.maxThrottle" [step]="step"
+         (change)="send()" />
 </div>

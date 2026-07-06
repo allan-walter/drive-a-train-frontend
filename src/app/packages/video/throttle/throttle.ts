@@ -1,6 +1,7 @@
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Config } from '../../common/config';
+import { VideoService } from '../video-page/video-service';
 
 @Component({
   selector: 'app-throttle',
@@ -10,6 +11,8 @@ import { Config } from '../../common/config';
 })
 export class Throttle {
   config = inject(Config);
+  videoService = inject(VideoService);
+  step = 0.05;
 
   connection: HubConnection;
   reverse = signal(false);
@@ -32,8 +35,8 @@ export class Throttle {
   handler(e: KeyboardEvent) {
     // Up and down for normal throttle. Can do super admin override with right and left which ignores any detected blockers
     const throttle = this.throttle().nativeElement;
-    const step = 0.05;
-    console.log(e);
+    const step = this.step;
+
     if (e.key === 'ArrowUp') {
       if (throttle.valueAsNumber == 0) {
         this.reverse.set(false);
