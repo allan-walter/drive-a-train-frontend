@@ -1,5 +1,6 @@
 <div class="relative h-full bg-black">
-  <app-video [size]="videoService.data().info!" [url]="config.birdsEyeVideoEndpoint"></app-video>
+  <app-video [size]="videoService.data().info!" [url2]="config.debugVideoEndpoint"
+             [url]="config.birdsEyeVideoEndpoint"></app-video>
 
   <div id="markers" class="absolute">
     <app-markers></app-markers>

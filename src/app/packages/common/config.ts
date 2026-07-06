@@ -3,4 +3,5 @@ export class Config {
   websocketEndpoint!: string;
   povVideoEndpoint!: string;
   birdsEyeVideoEndpoint!: string;
+  debugVideoEndpoint!: string;
 }

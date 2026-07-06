@@ -13,5 +13,4 @@ import { Markers } from './markers/markers';
 export class BirdsEyeVideo {
   videoService = inject(VideoService);
   config = inject(Config);
-
 }
