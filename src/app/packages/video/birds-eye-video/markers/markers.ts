@@ -18,7 +18,7 @@ export class Markers {
   config = inject(Config);
   videoService = inject(VideoService);
 
-  canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
+  // canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   connection!: HubConnection;
   railConnections = signal<Array<Connection>>([]);
 
@@ -28,44 +28,47 @@ export class Markers {
       .build();
 
     this.connection.on('connections', (res) => {
-      this.railConnections.set(res.map((r: any) => new Connection(r)));
+      console.log(res);
+      const connections = res.map((r: any) => new Connection(r));
+      console.log(connections);
+      this.railConnections.set(connections);
     });
 
     this.connection.on('units', (res: any) => {
-      const canvas = this.canvas().nativeElement;
-      const ctx = canvas.getContext('2d')!;
-      ctx.lineWidth = 3;
-      // data.forward = res.forward;
-      // data.reverse = res.reverse;
-      const units: Array<RailUnit> = res.units.map((u: any) => new RailUnit(u));
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      units.forEach((unit) => {
-        ctx.strokeStyle = 'red';
-
-        ctx.beginPath();
-        ctx.moveTo(unit.a.x, unit.a.y);
-        ctx.lineTo(unit.b.x, unit.b.y);
-        ctx.lineTo(unit.c.x, unit.c.y);
-        ctx.lineTo(unit.d.x, unit.d.y);
-        ctx.closePath(); // connect last corner to first
-        ctx.stroke();
-
-        // Draw a dot (filled circle) at x=200, y=200 with radius 5
-        if (unit.front != null) {
-          ctx.beginPath();
-          ctx.arc(unit.front.position.x, unit.front.position.y, 20, 0, Math.PI * 2);
-          ctx.fillStyle = 'green';
-          ctx.fill();
-        }
-        if (unit.back != null) {
-          ctx.beginPath();
-          ctx.arc(unit.back.position.x, unit.back.position.y, 20, 0, Math.PI * 2);
-          ctx.fillStyle = 'red';
-          ctx.fill();
-        }
-      });
+      // const canvas = this.canvas().nativeElement;
+      // const ctx = canvas.getContext('2d')!;
+      // ctx.lineWidth = 3;
+      // // data.forward = res.forward;
+      // // data.reverse = res.reverse;
+      // const units: Array<RailUnit> = res.units.map((u: any) => new RailUnit(u));
+      //
+      // ctx.clearRect(0, 0, canvas.width, canvas.height);
+      //
+      // units.forEach((unit) => {
+      //   ctx.strokeStyle = 'red';
+      //
+      //   ctx.beginPath();
+      //   ctx.moveTo(unit.a.x, unit.a.y);
+      //   ctx.lineTo(unit.b.x, unit.b.y);
+      //   ctx.lineTo(unit.c.x, unit.c.y);
+      //   ctx.lineTo(unit.d.x, unit.d.y);
+      //   ctx.closePath(); // connect last corner to first
+      //   ctx.stroke();
+      //
+      //   // Draw a dot (filled circle) at x=200, y=200 with radius 5
+      //   if (unit.front != null) {
+      //     ctx.beginPath();
+      //     ctx.arc(unit.front.position.x, unit.front.position.y, 20, 0, Math.PI * 2);
+      //     ctx.fillStyle = 'green';
+      //     ctx.fill();
+      //   }
+      //   if (unit.back != null) {
+      //     ctx.beginPath();
+      //     ctx.arc(unit.back.position.x, unit.back.position.y, 20, 0, Math.PI * 2);
+      //     ctx.fillStyle = 'red';
+      //     ctx.fill();
+      //   }
+      // });
     });
 
     void this.connection.start();
@@ -74,11 +77,10 @@ export class Markers {
   }
 
   uncouple(connection: Connection) {
-    const targets = [];
-    targets.push({ address: connection.addressOne, function: connection.couplerOne });
-    targets.push({ address: connection.addressTwo, function: connection.couplerTwo });
-
-    void this.connection.send('uncouple', targets);
+    void this.connection.send('uncouple', {
+      address: connection.address,
+      function: connection.coupler,
+    });
   }
 
   getPos(position: Vector2) {

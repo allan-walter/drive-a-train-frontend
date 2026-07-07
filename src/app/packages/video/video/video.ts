@@ -17,10 +17,10 @@ export class Video {
   canvas2 = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas2');
   constructor() {}
 
-  ngOnInit() {
-    new JSMpeg.Player(this.url(), {
-      canvas: this.canvas().nativeElement,
-    });
+  ngAfterViewInit() {
+    // new JSMpeg.Player(this.url(), {
+    //   canvas: this.canvas().nativeElement,
+    // });
     new JSMpeg.Player(this.url2(), {
       canvas: this.canvas2().nativeElement,
     });
