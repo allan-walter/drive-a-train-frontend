@@ -28,9 +28,7 @@ export class Markers {
       .build();
 
     this.connection.on('connections', (res) => {
-      console.log(res);
       const connections = res.map((r: any) => new Connection(r));
-      console.log(connections);
       this.railConnections.set(connections);
     });
 
