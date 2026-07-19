@@ -9,13 +9,12 @@
   </label>
 </div>
 
+@if (model().override) {
+  <div class="bg-red-500">
+    OVERRIDE ON
+  </div>
+}
 <div>
   <input [formField]="form.value" type="range" [step]="step"
-         (change)="send()" />
-</div>
-
-<div>
-  <label>Dev Override</label>
-  <input [formField]="form.override" type="range" [step]="step"
          (change)="send()" />
 </div>

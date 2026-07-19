@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Config } from '../../common/config';
 import { VideoService } from '../video-page/video-service';
@@ -17,13 +17,10 @@ export class Throttle {
 
   connection: HubConnection;
 
-  model = signal<ThrottleForm>({ value: 0, override: 0, direction: 'forward' });
+  model = signal<ThrottleForm>({ value: 0, override: false, direction: 'forward' });
   form = form(this.model, (f) => {
     min(f.value, 0);
     max(f.value, this.videoService.data().info.maxThrottle);
-
-    min(f.override, 0);
-    max(f.override, this.videoService.data().info.maxThrottle);
   });
 
   constructor() {
@@ -38,7 +35,7 @@ export class Throttle {
     void this.connection.start();
     window.addEventListener('keydown', (e) => this.handler(e), { passive: false });
 
-    computed(() => {
+    effect(() => {
       this.model();
       this.send();
     });
@@ -47,42 +44,49 @@ export class Throttle {
   handler(e: KeyboardEvent) {
     // Up and down for normal throttle. Can do super admin override with right and left which ignores any detected blockers
     const value = this.model().value;
-    const reverse = this.model().direction == 'reverse';
+    let reverse = this.model().direction == 'reverse';
     const step = this.step;
 
     if (e.key === 'ArrowUp') {
       if (value == 0) {
+        reverse = false;
         this.model.update((m) => ({ ...m, direction: 'forward' }));
       }
+      this.model.update((m) => ({ ...m, override: false }));
 
-      this.delta(!reverse ? step : -step, 0);
+      this.delta(!reverse ? step : -step);
       e.preventDefault();
     } else if (e.key === 'ArrowDown') {
       if (value == 0) {
+        reverse = true;
         this.model.update((m) => ({ ...m, direction: 'reverse' }));
       }
+      this.model.update((m) => ({ ...m, override: false }));
 
-      this.delta(reverse ? step : -step, 0);
+      this.delta(reverse ? step : -step);
       e.preventDefault();
     } else if (e.key === 'ArrowRight') {
       if (value == 0) {
+        reverse = false;
         this.model.update((m) => ({ ...m, direction: 'forward' }));
       }
+      this.model.update((m) => ({ ...m, override: true }));
 
-      this.delta(0, !reverse ? step : -step);
+      this.delta(!reverse ? step : -step);
       e.preventDefault();
     } else if (e.key === 'ArrowLeft') {
       if (value == 0) {
+        reverse = true;
         this.model.update((m) => ({ ...m, direction: 'reverse' }));
       }
+      this.model.update((m) => ({ ...m, override: true }));
 
-      this.delta(0, reverse ? step : -step);
+      this.delta(reverse ? step : -step);
       e.preventDefault();
     } else if (e.code == 'Space') {
-      this.model.update((m) => ({ ...m, value: 0, override: 0 }));
+      this.model.update((m) => ({ ...m, override: false, value: 0 }));
       e.preventDefault();
     }
-    console.log(this.model());
   }
 
   ngOnDestroy() {
@@ -99,23 +103,19 @@ export class Throttle {
     // }
   }
 
-  delta(delta: number, overrideDelta: number) {
-    if (Math.abs(delta) > 0) {
-      const newValue = this.model().value + delta;
-      // Can't have any override if there is a normal throttle
-      this.model.update((m) => ({ ...m, value: Number(newValue.toFixed(2)), override: 0 }));
-    } else {
-      const newValue = this.model().override + overrideDelta;
-      this.model.update((m) => ({ ...m, override: newValue }));
-    }
+  delta(delta: number) {
+    let newValue = Number((this.model().value + delta).toFixed(2));
+    newValue = Math.min(newValue, this.videoService.data().info.maxThrottle);
 
-    this.send();
+    this.model.update((m) => ({ ...m, value: Number(newValue.toFixed(2)) }));
   }
 
   send() {
+    if (this.connection.state != 'Connected') return;
+
     this.connection.send('setThrottle', {
       value: this.model().value,
-      overrideValue: this.model().override,
+      override: this.model().override,
       reverse: this.model().direction == 'reverse',
     });
   }
@@ -131,6 +131,6 @@ export class Throttle {
 
 type ThrottleForm = {
   value: number;
-  override: number;
+  override: boolean;
   direction: 'forward' | 'reverse';
 };
