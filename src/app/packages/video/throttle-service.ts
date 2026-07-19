@@ -36,50 +36,50 @@ export class ThrottleService {
     });
   }
 
-  handler(e: KeyboardEvent) {
-    // Up and down for normal throttle. Can do super admin override with right and left which ignores any detected blockers
+  up(override = false) {
     const value = this.model().value;
     let reverse = this.model().direction == 'reverse';
-    const step = this.step;
 
+    if (value == 0) {
+      reverse = false;
+      this.model.update((m) => ({ ...m, direction: 'forward' }));
+    }
+    this.model.update((m) => ({ ...m, override: override }));
+    this.delta(!reverse ? this.step : -this.step);
+  }
+
+  down(override: boolean = false) {
+    const value = this.model().value;
+    let reverse = this.model().direction == 'reverse';
+
+    if (value == 0) {
+      reverse = true;
+      this.model.update((m) => ({ ...m, direction: 'reverse' }));
+    }
+    this.model.update((m) => ({ ...m, override: override }));
+
+    this.delta(reverse ? this.step : -this.step);
+  }
+
+  stop() {
+    this.model.update((m) => ({ ...m, override: false, value: 0 }));
+  }
+
+  handler(e: KeyboardEvent) {
     if (e.key === 'ArrowUp') {
-      if (value == 0) {
-        reverse = false;
-        this.model.update((m) => ({ ...m, direction: 'forward' }));
-      }
-      this.model.update((m) => ({ ...m, override: false }));
-
-      this.delta(!reverse ? step : -step);
+      this.up();
       e.preventDefault();
     } else if (e.key === 'ArrowDown') {
-      if (value == 0) {
-        reverse = true;
-        this.model.update((m) => ({ ...m, direction: 'reverse' }));
-      }
-      this.model.update((m) => ({ ...m, override: false }));
-
-      this.delta(reverse ? step : -step);
+      this.down();
       e.preventDefault();
     } else if (e.key === 'ArrowRight') {
-      if (value == 0) {
-        reverse = false;
-        this.model.update((m) => ({ ...m, direction: 'forward' }));
-      }
-      this.model.update((m) => ({ ...m, override: true }));
-
-      this.delta(!reverse ? step : -step);
+      this.up(true);
       e.preventDefault();
     } else if (e.key === 'ArrowLeft') {
-      if (value == 0) {
-        reverse = true;
-        this.model.update((m) => ({ ...m, direction: 'reverse' }));
-      }
-      this.model.update((m) => ({ ...m, override: true }));
-
-      this.delta(reverse ? step : -step);
+      this.down(true);
       e.preventDefault();
     } else if (e.code == 'Space') {
-      this.model.update((m) => ({ ...m, override: false, value: 0 }));
+      this.stop();
       e.preventDefault();
     }
   }

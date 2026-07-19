@@ -4,10 +4,12 @@ import { Config } from '../../common/config';
 import { VideoService } from '../video-page/video-service';
 import { form, FormField, max, min } from '@angular/forms/signals';
 import { ThrottleService } from '../throttle-service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faDown, faStop, faUp } from '@fortawesome/pro-solid-svg-icons';
 
 @Component({
   selector: 'app-throttle',
-  imports: [FormField],
+  imports: [FormField, FaIconComponent],
   templateUrl: './throttle.html',
   styleUrl: './throttle.css',
 })
@@ -25,6 +27,10 @@ export class Throttle {
     // };
     // stompService.send('/app/couple', body);
   }
+
+  protected readonly faUp = faUp;
+  protected readonly faDown = faDown;
+  protected readonly faStop = faStop;
 }
 
 type ThrottleForm = {

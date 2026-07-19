@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.btn-throttle {
+  @apply w-16 aspect-square rounded-full;
+}

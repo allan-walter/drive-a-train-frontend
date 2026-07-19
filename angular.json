@@ -25,9 +25,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ]
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -45,10 +43,37 @@
               ],
               "outputHashing": "all"
             },
-            "development": {
+            "external-development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public"
+                },
+                {
+                  "glob": "config.json",
+                  "input": "src/config/external",
+                  "output": "./"
+                }
+              ]
+            },
+            "garage-development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public"
+                },
+                {
+                  "glob": "config.json",
+                  "input": "src/config/garage",
+                  "output": "./"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -59,11 +84,11 @@
             "production": {
               "buildTarget": "drive-a-train-frontend:build:production"
             },
-            "development": {
-              "buildTarget": "drive-a-train-frontend:build:development"
+            "external-development": {
+              "buildTarget": "drive-a-train-frontend:build:external-development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "external-development"
         },
         "test": {
           "builder": "@angular/build:unit-test"

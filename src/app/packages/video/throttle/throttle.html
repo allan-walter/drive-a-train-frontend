@@ -9,11 +9,24 @@
   </label>
 </div>
 
+
+<div class="flex flex-col">
+  <button (click)="throttleService.up(true)" class="btn-throttle bg-black text-white">
+    <fa-icon [icon]="faUp"></fa-icon>
+  </button>
+  <button class="bg-red-500 btn-throttle" (click)="throttleService.stop()">
+    <fa-icon [icon]="faStop"></fa-icon>
+  </button>
+  <button (click)="throttleService.down(true)" class="btn-throttle bg-black text-white">
+    <fa-icon [icon]="faDown"></fa-icon>
+  </button>
+</div>
+
+<div>
+  <input [formField]="throttleService.form.value" type="range" [step]="throttleService.step" />
+</div>
 @if (throttleService.model().override) {
   <div class="bg-red-500">
     OVERRIDE ON
   </div>
 }
-<div>
-  <input [formField]="throttleService.form.value" type="range" [step]="throttleService.step" />
-</div>

@@ -3,7 +3,7 @@ import { App } from './app/app';
 import { getConfig } from './app/app.config';
 import { Config } from './app/packages/common/config';
 
-fetch('./config/dev.json').then(async (config) => {
+fetch('./config.json').then(async (config) => {
   const json = (await config.json()) as Config;
   bootstrapApplication(App, getConfig(json)).catch((err) => console.error(err));
 });

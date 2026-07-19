@@ -1,0 +1,6 @@
+{
+  "baseEndpoint": "http://localhost:5127",
+  "povVideoEndpoint": "ws://localhost:5127/ws/video/pov",
+  "birdsEyeVideoEndpoint": "ws://localhost:5127/ws/video/birdsEye",
+  "debugVideoEndpoint": "ws://localhost:5127/ws/video/debug"
+}
