@@ -1,20 +1,19 @@
 <div>
   <label>
-    <input type="radio" [value]="'forward'" [formField]="form.direction" />
+    <input type="radio" [value]="'forward'" [formField]="throttleService.form.direction" />
     Forward
   </label>
   <label>
-    <input type="radio" [value]="'reverse'" [formField]="form.direction" />
+    <input type="radio" [value]="'reverse'" [formField]="throttleService.form.direction" />
     Reverse
   </label>
 </div>
 
-@if (model().override) {
+@if (throttleService.model().override) {
   <div class="bg-red-500">
     OVERRIDE ON
   </div>
 }
 <div>
-  <input [formField]="form.value" type="range" [step]="step"
-         (change)="send()" />
+  <input [formField]="throttleService.form.value" type="range" [step]="throttleService.step" />
 </div>

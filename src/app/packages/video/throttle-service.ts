@@ -1,10 +1,11 @@
-import { inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, inject, Service } from '@angular/core';
+import { effect, inject, Service, signal } from '@angular/core';
 import { Config } from '../common/config';
 import { VideoService } from './video-page/video-service';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { form, max, min } from '@angular/forms/signals';
 
 @Service()
 export class ThrottleService {
-
   config = inject(Config);
   videoService = inject(VideoService);
   step = 0.05;
@@ -129,4 +130,3 @@ type ThrottleForm = {
   override: boolean;
   direction: 'forward' | 'reverse';
 };
-}
