@@ -1,4 +1,21 @@
 <div>
-  <input #throttle value="0" type="range" min="0" [max]="videoService.data().info.maxThrottle" [step]="step"
+  <label>
+    <input type="radio" [value]="'forward'" [formField]="form.direction" />
+    Forward
+  </label>
+  <label>
+    <input type="radio" [value]="'reverse'" [formField]="form.direction" />
+    Reverse
+  </label>
+</div>
+
+<div>
+  <input [formField]="form.value" type="range" [step]="step"
+         (change)="send()" />
+</div>
+
+<div>
+  <label>Dev Override</label>
+  <input [formField]="form.override" type="range" [step]="step"
          (change)="send()" />
 </div>

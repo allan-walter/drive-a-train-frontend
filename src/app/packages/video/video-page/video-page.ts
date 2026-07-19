@@ -46,7 +46,6 @@ export class VideoPage {
 
     connection.on('info', (info) => {
       this.videoService.data.update((x) => ({ ...x, info }));
-      console.log(this.videoService.data());
       // this.data.set({ ...this.data(), info: info });
     });
 
