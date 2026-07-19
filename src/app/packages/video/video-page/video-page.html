@@ -1,7 +1,8 @@
 @let data = videoService.data();
 @if (data.info != null && data.state != null) {
-  <div class="h-full flex items-stretch">
-    <div class="flex-8/12 relative">
+  <div class="h-full flex items-stretch relative">
+    <!--    <div class="flex-8/12 relative">-->
+    <div class="flex-12/12 relative">
       <app-birds-eye-video></app-birds-eye-video>
       <div class="absolute left-0 top-[200px]">
         <!--      <button class="btn btn-white" (click)={() => action('startup')}>Initial Run Sequence</button>-->
@@ -16,15 +17,18 @@
         </div>
       </div>
     </div>
-    <div class="flex-4/12 flex flex-col">
-      <div class="flex-6/12">
-        <app-throttle></app-throttle>
-        <!--        <Units></Units>-->
-      </div>
-      <div class="flex-6/12">
-<!--        <app-pov-video></app-pov-video>-->
-      </div>
+    <div class="absolute top-0 right-0">
+      <app-throttle-overlay></app-throttle-overlay>
     </div>
+    <!--    <div class="flex-4/12 flex flex-col">-->
+    <!--      <div class="flex-6/12">-->
+    <!--        <app-throttle></app-throttle>-->
+    <!--        &lt;!&ndash;        <Units></Units>&ndash;&gt;-->
+    <!--      </div>-->
+    <!--      <div class="flex-6/12">-->
+    <!--        &lt;!&ndash;        <app-pov-video></app-pov-video>&ndash;&gt;-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 } @else {
   Loading...

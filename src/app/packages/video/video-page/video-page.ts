@@ -6,10 +6,11 @@ import { Config } from '../../common/config';
 import { PovVideo } from '../pov-video/pov-video';
 import { VideoService } from './video-service';
 import { BirdsEyeVideo } from '../birds-eye-video/birds-eye-video';
+import { ThrottleOverlay } from '../throttle-overlay/throttle-overlay';
 
 @Component({
   selector: 'app-video-page',
-  imports: [Throttle, PovVideo, BirdsEyeVideo],
+  imports: [Throttle, PovVideo, BirdsEyeVideo, ThrottleOverlay],
   templateUrl: './video-page.html',
   styleUrl: './video-page.css',
 })
