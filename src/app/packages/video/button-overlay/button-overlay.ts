@@ -35,6 +35,8 @@ export class ButtonOverlay {
 
   isFullscreen = signal(false);
 
+  fullscreenEnabled = document.documentElement.requestFullscreen != null;
+
   constructor() {
     document.addEventListener('fullscreenchange', () => {
       this.isFullscreen.set(document.fullscreenElement != null);
