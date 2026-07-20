@@ -84,11 +84,14 @@
             "production": {
               "buildTarget": "drive-a-train-frontend:build:production"
             },
-            "external-development": {
+            "external": {
               "buildTarget": "drive-a-train-frontend:build:external-development"
+            },
+            "garage": {
+              "buildTarget": "drive-a-train-frontend:build:garage-development"
             }
           },
-          "defaultConfiguration": "external-development"
+          "defaultConfiguration": "external"
         },
         "test": {
           "builder": "@angular/build:unit-test"
