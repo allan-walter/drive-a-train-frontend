@@ -6,6 +6,7 @@ import { form, FormField, max, min } from '@angular/forms/signals';
 import { ThrottleService } from '../throttle-service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faDown, faStop, faUp } from '@fortawesome/pro-solid-svg-icons';
+import { ThrottleHub } from '../../../hubs/throttle-hub';
 
 @Component({
   selector: 'app-throttle',

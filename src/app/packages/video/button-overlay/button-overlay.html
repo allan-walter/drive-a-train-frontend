@@ -1,0 +1,19 @@
+<div class="flex gap-3 items-center">
+  <button (click)="toggleFullscreen()" class="btn primary">
+    <fa-icon [icon]="isFullscreen() ? faArrowsMinimize : faArrowsMaximize"></fa-icon>
+  </button>
+
+  <button [routerLink]="''" class="btn primary">
+    <fa-icon [icon]="faHome"></fa-icon>
+  </button>
+
+  <button (click)="togglePower()" class="btn" [class]="videoService.powerOn() ? 'success' : 'danger' ">
+    <fa-icon [icon]="videoService.powerOn() ? faToggleOn : faToggleOff"></fa-icon>
+  </button>
+
+  @let anyDisconnected = connectionStates().some(c => !c);
+  <button (click)="reconnect()" class="rounded-full p-3 text-white font-bold"
+          [class]="anyDisconnected ? 'bg-red-500' : 'bg-green-500'">
+    {{ anyDisconnected ? 'Offline' : 'Online' }}
+  </button>
+</div>

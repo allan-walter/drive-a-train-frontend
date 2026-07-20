@@ -3,14 +3,13 @@ import { Config } from '../common/config';
 import { VideoService } from './video-page/video-service';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { form, max, min } from '@angular/forms/signals';
+import { ThrottleHub } from '../../hubs/throttle-hub';
 
 @Service()
 export class ThrottleService {
   config = inject(Config);
   videoService = inject(VideoService);
-  step = 0.05;
-
-  connection: HubConnection;
+  throttleHub = inject(ThrottleHub);
 
   model = signal<ThrottleForm>({ value: 0, override: false, direction: 'forward' });
   form = form(this.model, (f) => {
@@ -19,15 +18,6 @@ export class ThrottleService {
   });
 
   constructor() {
-    this.connection = new HubConnectionBuilder()
-      .withUrl(`${this.config.baseEndpoint}/hubs/throttle`)
-      .build();
-
-    this.connection.on('send', (res) => {
-      this.handleLimits(res.forwardValue, res.reverseValue);
-    });
-
-    void this.connection.start();
     window.addEventListener('keydown', (e) => this.handler(e), { passive: false });
 
     effect(() => {
@@ -37,6 +27,7 @@ export class ThrottleService {
   }
 
   up(override = false) {
+    const step = this.videoService.data().info.throttleStep;
     const value = this.model().value;
     let reverse = this.model().direction == 'reverse';
 
@@ -45,10 +36,11 @@ export class ThrottleService {
       this.model.update((m) => ({ ...m, direction: 'forward' }));
     }
     this.model.update((m) => ({ ...m, override: override }));
-    this.delta(!reverse ? this.step : -this.step);
+    this.delta(!reverse ? step : -step);
   }
 
   down(override: boolean = false) {
+    const step = this.videoService.data().info.throttleStep;
     const value = this.model().value;
     let reverse = this.model().direction == 'reverse';
 
@@ -58,7 +50,7 @@ export class ThrottleService {
     }
     this.model.update((m) => ({ ...m, override: override }));
 
-    this.delta(reverse ? this.step : -this.step);
+    this.delta(reverse ? step : -step);
   }
 
   stop() {
@@ -86,7 +78,6 @@ export class ThrottleService {
 
   ngOnDestroy() {
     window.removeEventListener('keydown', this.handler);
-    void this.connection.stop();
   }
 
   handleLimits(forwardLimit: number, reverseLimit: number) {
@@ -106,10 +97,9 @@ export class ThrottleService {
   }
 
   send() {
-    console.log('consider send', this.connection.state, JSON.stringify(this.model()));
-    if (this.connection.state != 'Connected') return;
+    if (this.throttleHub.connection.state != 'Connected') return;
 
-    this.connection.send('setThrottle', {
+    this.throttleHub.connection.send('setThrottle', {
       value: this.model().value,
       override: this.model().override,
       reverse: this.model().direction == 'reverse',

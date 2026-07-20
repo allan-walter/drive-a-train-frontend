@@ -7,6 +7,7 @@ import { Connection } from './connection';
 import { Vector2 } from '../../data/vector2';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faSplit } from '@fortawesome/pro-solid-svg-icons';
+import { UnitHub } from '../../../../hubs/unit-hub';
 
 @Component({
   selector: 'app-markers',
@@ -16,23 +17,20 @@ import { faSplit } from '@fortawesome/pro-solid-svg-icons';
 })
 export class Markers {
   config = inject(Config);
+  unitHub = inject(UnitHub);
   videoService = inject(VideoService);
 
   // canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
-  connection!: HubConnection;
   railConnections = signal<Array<Connection>>([]);
 
   ngOnInit() {
-    this.connection = new HubConnectionBuilder()
-      .withUrl(`${this.config.baseEndpoint}/hubs/units`)
-      .build();
-
-    this.connection.on('connections', (res) => {
+    this.unitHub.connection.on('connections', (res) => {
       const connections = res.map((r: any) => new Connection(r));
       this.railConnections.set(connections);
     });
 
-    this.connection.on('units', (res: any) => {
+    this.unitHub.connection.on('units', (res: any) => {
+      this.videoService.powerOn.set(res.powerOn);
       // const canvas = this.canvas().nativeElement;
       // const ctx = canvas.getContext('2d')!;
       // ctx.lineWidth = 3;
@@ -69,13 +67,11 @@ export class Markers {
       // });
     });
 
-    void this.connection.start();
-
     // this.canvas().nativeElement.style.aspectRatio = `${this.videoService.data().info.width} / ${this.videoService.data().info.height}`;
   }
 
   uncouple(connection: Connection) {
-    void this.connection.send('uncouple', {
+    void this.unitHub.connection.send('uncouple', {
       address: connection.address,
       function: connection.coupler,
     });
@@ -96,7 +92,7 @@ export class Markers {
   }
 
   ngOnDestroy() {
-    void this.connection.stop();
+    void this.unitHub.dispose();
   }
 
   protected readonly faSplit = faSplit;

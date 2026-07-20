@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+.btn {
+  @apply rounded-2xl w-10 aspect-square text-black transition duration-200 ease-in-out;
+
+  &.primary {
+    @apply bg-white;
+  }
+
+  &.danger {
+    @apply bg-red-500 text-white;
+  }
+
+  &.success {
+    @apply bg-green-500 text-white;
+  }
+
+  &:hover {
+    @apply opacity-75;
+  }
+}

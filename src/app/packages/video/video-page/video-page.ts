@@ -6,10 +6,13 @@ import { Config } from '../../common/config';
 import { PovVideo } from '../pov-video/pov-video';
 import { VideoService } from './video-service';
 import { BirdsEyeVideo } from '../birds-eye-video/birds-eye-video';
+import { ButtonOverlay } from '../button-overlay/button-overlay';
+import { WS_HUBS } from '../../../hubs/base-hub';
+import { InfoHub } from '../../../hubs/info-hub';
 
 @Component({
   selector: 'app-video-page',
-  imports: [Throttle, PovVideo, BirdsEyeVideo],
+  imports: [Throttle, PovVideo, BirdsEyeVideo, ButtonOverlay],
   templateUrl: './video-page.html',
   styleUrl: './video-page.css',
 })
@@ -17,6 +20,8 @@ export class VideoPage {
   config = inject(Config);
 
   videoService = inject(VideoService);
+  hubs = inject(WS_HUBS);
+  infoHub = inject(InfoHub);
 
   handler = (e: KeyboardEvent) => {
     // if (e.key === 'f') {
@@ -29,39 +34,21 @@ export class VideoPage {
   };
 
   constructor() {
-    this.infoHub();
-    this.cropHub();
+    this.hubs.forEach((h) => {
+      h.start();
+    });
+
+    this.infoHub.connection.on('info', (info) => {
+      this.videoService.data.update((x) => ({ ...x, info }));
+    });
 
     window.addEventListener('keydown', this.handler, { passive: false });
   }
 
   ngOnDestroy() {
     window.removeEventListener('keydown', this.handler);
-  }
 
-  infoHub() {
-    let connection = new HubConnectionBuilder()
-      .withUrl(`${this.config.baseEndpoint}/hubs/info`)
-      .build();
-
-    connection.on('info', (info) => {
-      this.videoService.data.update((x) => ({ ...x, info }));
-      // this.data.set({ ...this.data(), info: info });
-    });
-
-    void connection.start();
-  }
-
-  cropHub() {
-    let connection = new HubConnectionBuilder()
-      .withUrl(`${this.config.baseEndpoint}/hubs/crop`)
-      .build();
-
-    connection.on('send', (crop) => {
-      // this.data().state = crop;
-    });
-
-    void connection.start();
+    this.hubs.forEach((h) => h.dispose());
   }
 
   action(action: string) {

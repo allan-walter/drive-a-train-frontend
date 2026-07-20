@@ -23,7 +23,7 @@
 </div>
 
 <div>
-  <input [formField]="throttleService.form.value" type="range" [step]="throttleService.step" />
+  <input [formField]="throttleService.form.value" type="range" [step]="videoService.data().info.throttleStep" />
 </div>
 @if (throttleService.model().override) {
   <div class="bg-red-500">
