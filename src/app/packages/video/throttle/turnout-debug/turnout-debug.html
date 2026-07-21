@@ -2,5 +2,9 @@
 <div>
   <label>Degree</label>
   <input type="number" class="border" [(ngModel)]="degree">
+  <button class="btn" (click)="degree.set(45); send()">45</button>
+  <button class="btn" (click)="degree.set(90); send()">90</button>
+  <button class="btn" (click)="degree.set(135); send()">135</button>
+  <!--  <input type="range" min="0" max="180"/>-->
   <button class="bg-black text-white" (click)="send()">Send</button>
 </div>

@@ -2,6 +2,21 @@
   <!--  <canvas #canvas id="markers" class="w-full h-full" [width]="videoService.data().info.width"-->
   <!--          [height]="videoService.data().info.height"></canvas>-->
 
+  @for (turnout of videoService.data().info.turnoutLocations; track turnout.pin) {
+    @let pos = getTurnoutPos(turnout);
+    <div class="w-[200px] flex justify-between absolute"
+         [style.left.%]="pos.x"
+         [style.top.%]="pos.y"
+         [style.transform]="'rotate(' + turnout.rotation + 'deg)'">
+      <button class="turnout-btn" (click)="run(turnout, false)">
+        <fa-icon [icon]="faArrowLeft"></fa-icon>
+      </button>
+      <button class="turnout-btn" (click)="run(turnout, true)">
+        <fa-icon [icon]="faArrowRight"></fa-icon>
+      </button>
+    </div>
+  }
+
   @for (connection of railConnections(); track connection.address) {
     @let pos = getPos(connection.point);
 

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+.turnout-btn {
+  @apply bg-white rounded-2xl text-black w-[50px] aspect-square;
+}
+
 .uncouple-btn {
   @apply rounded-full border-[8px] border-white w-[150px] aspect-square absolute flex flex-col items-center;
   transform: translate(-50%, -50%);

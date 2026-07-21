@@ -8,3 +8,10 @@ export class Data {
   state = new State();
   connection?: 'connecting' | 'disconnected' | 'connected';
 }
+
+export type TurnoutLocation = {
+  pin: number;
+  x: number;
+  y: number;
+  rotation: number;
+};

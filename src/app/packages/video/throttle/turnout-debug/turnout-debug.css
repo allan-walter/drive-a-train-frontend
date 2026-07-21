@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.btn {
+  @apply bg-black text-white p-2;
+}

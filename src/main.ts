@@ -9,3 +9,5 @@ fetch('./config.json').then(async (config) => {
 });
 
 // ng s -c garage --host="192.168.20.201"
+// dotnet DriveATrain.dll --environment Garage
+

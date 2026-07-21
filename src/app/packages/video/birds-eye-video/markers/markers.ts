@@ -6,8 +6,9 @@ import { VideoService } from '../../video-page/video-service';
 import { Connection } from './connection';
 import { Vector2 } from '../../data/vector2';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faSplit } from '@fortawesome/pro-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faSplit } from '@fortawesome/pro-solid-svg-icons';
 import { UnitHub } from '../../../../hubs/unit-hub';
+import { TurnoutLocation } from '../../data/data';
 
 @Component({
   selector: 'app-markers',
@@ -77,6 +78,28 @@ export class Markers {
     });
   }
 
+  run(turnout: TurnoutLocation, state: boolean) {
+    console.log(turnout, state);
+    void this.unitHub.connection.send('turnout', {
+      pin: turnout.pin,
+      state: state,
+    });
+  }
+
+  getTurnoutPos(turnout: TurnoutLocation) {
+    const data = this.videoService.data();
+    let nx = (turnout.x / data.info.width) * (1 / data.state.zoom);
+    let ny = (turnout.y / data.info.height) * (1 / data.state.zoom);
+
+    nx -= (data.state.x / data.info.width) * (1 / data.state.zoom);
+    ny -= (data.state.y / data.info.height) * (1 / data.state.zoom);
+
+    return {
+      x: nx * 100,
+      y: ny * 100,
+    };
+  }
+
   getPos(position: Vector2) {
     const data = this.videoService.data();
     let nx = (position.x / data.info.width) * (1 / data.state.zoom);
@@ -96,4 +119,6 @@ export class Markers {
   }
 
   protected readonly faSplit = faSplit;
+  protected readonly faArrowLeft = faArrowLeft;
+  protected readonly faArrowRight = faArrowRight;
 }

@@ -40,6 +40,8 @@ export class VideoPage {
 
     this.infoHub.connection.on('info', (info) => {
       this.videoService.data.update((x) => ({ ...x, info }));
+      console.log(info);
+      console.log(this.videoService.data().info.turnoutLocations);
     });
 
     window.addEventListener('keydown', this.handler, { passive: false });
