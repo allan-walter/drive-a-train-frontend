@@ -7,10 +7,11 @@ import { ThrottleService } from '../throttle-service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faDown, faStop, faUp } from '@fortawesome/pro-solid-svg-icons';
 import { ThrottleHub } from '../../../hubs/throttle-hub';
+import { TurnoutDebug } from './turnout-debug/turnout-debug';
 
 @Component({
   selector: 'app-throttle',
-  imports: [FormField, FaIconComponent],
+  imports: [FormField, FaIconComponent, TurnoutDebug],
   templateUrl: './throttle.html',
   styleUrl: './throttle.css',
 })
