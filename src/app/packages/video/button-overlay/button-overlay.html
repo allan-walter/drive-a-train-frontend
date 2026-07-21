@@ -1,7 +1,9 @@
 <div class="flex gap-3 items-center">
-  <button (click)="toggleFullscreen()" class="btn primary">
-    <fa-icon [icon]="isFullscreen() ? faArrowsMinimize : faArrowsMaximize"></fa-icon>
-  </button>
+  @if (fullscreenEnabled) {
+    <button (click)="toggleFullscreen()" class="btn primary fullsc">
+      <fa-icon [icon]="isFullscreen() ? faArrowsMinimize : faArrowsMaximize"></fa-icon>
+    </button>
+  }
 
   <button [routerLink]="''" class="btn primary">
     <fa-icon [icon]="faHome"></fa-icon>
@@ -12,8 +14,10 @@
   </button>
 
   @let anyDisconnected = connectionStates().some(c => !c);
-  <button (click)="reconnect()" class="rounded-full p-3 text-white font-bold"
+  <button (click)="reconnect()" class="rounded-full px-3 py-1 text-white font-bold"
           [class]="anyDisconnected ? 'bg-red-500' : 'bg-green-500'">
-    {{ anyDisconnected ? 'Offline' : 'Online' }}
+    <small>
+      {{ anyDisconnected ? 'Offline' : 'Online' }}
+    </small>
   </button>
 </div>
