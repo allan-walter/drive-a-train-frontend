@@ -1,0 +1,36 @@
+@let data = videoService.data();
+@if (data.info != null && data.state != null) {
+  <div class="relative h-full bg-black">
+    <div class="text-white">
+      <ul>
+        <li>
+          Green - Line
+        </li>
+        <li>
+          Orange - Selected, where new lines link to
+        </li>
+        <li>
+          Blue - Moving
+        </li>
+      </ul>
+
+      <p>
+        Right click to deselect (for creating a separate path)
+      </p>
+
+      <button (click)="deleteSelected()">Delete Selected</button>
+<!--      <button (click)="split()">Split</button>-->
+      <button (click)="export()">Export</button>
+    </div>
+    <app-video [size]="videoService.data().info!" [url]="config.birdsEyeVideoEndpoint"></app-video>
+
+    <canvas #canvas id="canvas" class="absolute left-0 top-0 w-full h-full" [width]="videoService.data().info!.width"
+            [height]="videoService.data().info!.height">
+
+    </canvas>
+
+    <!--    <div class="absolute left-0 top-0">-->
+    <!--          <Translate></Translate>-->
+    <!--    </div>-->
+  </div>
+}

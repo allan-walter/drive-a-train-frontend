@@ -18,4 +18,10 @@ export const routes: Routes = [
     loadComponent: () => import('./packages/video/video-page/video-page').then((m) => m.VideoPage),
     canActivate: [canActivate],
   },
+  {
+    path: 'layout',
+    loadComponent: () =>
+      import('./packages/layout/layout-page/layout-page').then((m) => m.LayoutPage),
+    canActivate: [canActivate],
+  },
 ];
