@@ -4,20 +4,31 @@ import { Config } from '../../common/config';
 import { VideoService } from '../../video/video-page/video-service';
 import { InfoHub } from '../../../hubs/info-hub';
 import { form, FormField } from '@angular/forms/signals';
+import { Sizer } from '../../sizer/sizer';
+
+type Node = {
+  x: number;
+  y: number;
+};
+
+type Edge = {
+  a: Node;
+  b: Node;
+};
 
 type Block = {
-  point: Point;
+  point: Node;
   distance: number;
 };
 
 @Component({
   selector: 'app-layout-page',
-  imports: [Video, FormField],
+  imports: [Video, FormField, Sizer],
   templateUrl: './layout-page.html',
   styleUrl: './layout-page.css',
 })
 export class LayoutPage {
-  arcRadius = 30;
+  arcRadius = 5;
   config = inject(Config);
   videoService = inject(VideoService);
   infoHub = inject(InfoHub);
@@ -25,14 +36,14 @@ export class LayoutPage {
   canvas = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
   // A flat list of points. So joining paths can have their intersection moved as one piece
-  points = Array<Point>();
+  nodes = Array<Node>();
   blocks = new Array<Block>();
 
   // These need to exist in the main flat points list
-  paths = new Array<Array<Point>>();
+  edges = new Array<Edge>();
 
   isDragging = false;
-  selected?: Point;
+  selected?: Node;
   selectedBlock?: Block;
 
   jsonModel = signal({ json: '' });
@@ -42,16 +53,16 @@ export class LayoutPage {
     const point = this.selected;
     if (point == null) return;
 
-    this.points.splice(this.points.indexOf(point), 1);
+    this.nodes.splice(this.nodes.indexOf(point), 1);
     // Point could be used by multiple paths
-    const paths = this.paths.filter((p) => p.includes(point));
-    paths.forEach((path) => {
-      path.splice(path.indexOf(point), 1);
-    });
+    // const paths = this.edges.filter((p) => p.includes(point));
+    // paths.forEach((path) => {
+    //   path.splice(path.indexOf(point), 1);
+    // });
 
-    this.paths = this.paths.filter((p) => p.length > 0);
+    // this.edges = this.edges.filter((p) => p.length > 0);
 
-    this.drawLines();
+    this.draw();
   }
 
   firstRun = true;
@@ -63,10 +74,9 @@ export class LayoutPage {
 
     this.firstRun = false;
 
-    this.drawLines();
+    this.draw();
 
-    let lastMousePosition: Point | undefined;
-    console.log('setup');
+    let lastMousePosition: Node | undefined;
 
     window.addEventListener(
       'keydown',
@@ -77,11 +87,11 @@ export class LayoutPage {
 
           this.blocks.push({
             point: lastMousePosition,
-            distance: 100,
+            distance: 30,
           });
 
           untracked(() => {
-            this.drawLines();
+            this.draw();
           });
         }
       },
@@ -91,7 +101,7 @@ export class LayoutPage {
     canvas.addEventListener('contextmenu', (e) => {
       this.selected = undefined;
 
-      this.drawLines();
+      this.draw();
       e.preventDefault();
     });
 
@@ -105,7 +115,7 @@ export class LayoutPage {
         this.isDragging = true;
       }
 
-      this.drawLines();
+      this.draw();
     });
 
     canvas.addEventListener('mousemove', (e) => {
@@ -115,12 +125,13 @@ export class LayoutPage {
 
       this.selected.x = lastMousePosition.x;
       this.selected.y = lastMousePosition.y;
-      this.drawLines();
+
+      this.draw();
     });
 
     canvas.addEventListener('mouseup', () => {
       this.isDragging = false;
-      this.drawLines();
+      this.draw();
     });
 
     canvas.addEventListener('click', (e) => {
@@ -130,34 +141,21 @@ export class LayoutPage {
         return;
       }
 
-      // There could be more than one path to append to, if this is the intersection of 2 selected. So just take the first one
-      let path = this.paths.find((p) => (this.selected ? p.includes(this.selected) : false));
+      const prev = this.selected;
+      this.selected = this.getPointClick(position) ?? { x: position.x, y: position.y };
+      this.nodes.push(this.selected);
 
-      // Add to the end of the path
-      if (this.selected != null && path != null && path.indexOf(this.selected) == path.length - 1) {
-        const point = { x: position.x, y: position.y };
-        this.points.push(point);
-        path.push(point);
-        this.selected = point;
-      } else {
-        // Either null current path, or make a new path since a point in the middle was selected
-        const path = new Array<Point>();
-
-        // Add the selected as the start point
-        if (this.selected != null) {
-          path.push(this.selected);
-        }
-
-        const point = { x: position.x, y: position.y };
-        this.points.push(point);
-        path.push(point);
-
-        this.paths.push(path);
-
-        this.selected = point;
+      if (prev == null) {
+        this.draw();
+        return;
       }
 
-      this.drawLines();
+      this.edges.push({
+        a: prev,
+        b: this.selected,
+      });
+
+      this.draw();
     });
   }
 
@@ -167,11 +165,15 @@ export class LayoutPage {
     effect(() => {
       try {
         const obj = JSON.parse(this.jsonModel().json);
-        console.log(obj );
-        this.paths = obj.paths ?? [];
+        this.nodes = obj.nodes ?? [];
+        // These need to be actually from the nodes list so if a node position is updated the edge updates too
+        this.edges = (obj.edges ?? []).map((e: any) => ({
+          a: this.nodes.find((n) => n.x == e.a.x && n.y == e.a.y),
+          b: this.nodes.find((n) => n.x == e.b.x && n.y == e.b.y),
+        }));
         this.blocks = obj.blocks ?? [];
         untracked(() => {
-          this.drawLines();
+          this.draw();
         });
       } catch (e) {}
     });
@@ -182,8 +184,8 @@ export class LayoutPage {
     });
   }
 
-  getPointClick(position: Point) {
-    return this.points.find((p) =>
+  getPointClick(position: Node) {
+    return this.nodes.find((p) =>
       this.closeTo(p, { x: position.x, y: position.y }, this.arcRadius),
     );
     // return this.layout
@@ -194,7 +196,7 @@ export class LayoutPage {
     //   .find(([p]) => p) as [Point, Array<Point>] | undefined;
   }
 
-  closeTo(a: Point, b: Point, dist: number) {
+  closeTo(a: Node, b: Node, dist: number) {
     const dx = a.x - b.x;
     const dy = a.y - b.y;
     return dx * dx + dy * dy <= dist * dist;
@@ -213,7 +215,7 @@ export class LayoutPage {
     return { x: Math.floor(x), y: Math.floor(y) };
   }
 
-  drawLines() {
+  draw() {
     const canvas = this.canvas()?.nativeElement;
     if (!canvas) {
       return;
@@ -236,35 +238,34 @@ export class LayoutPage {
     });
 
     // Points
-    this.points.forEach((point) => {
+    this.nodes.forEach((node) => {
       context.beginPath();
-      if (this.selected == point) {
+      if (this.selected == node) {
         context.fillStyle = this.isDragging ? 'blue' : 'orange';
       } else {
         context.fillStyle = 'green';
       }
 
-      context.arc(point.x, point.y, this.arcRadius, 0, this.radians(360));
+      context.arc(node.x, node.y, this.arcRadius, 0, this.radians(360));
       context.fill();
     });
 
     // Lines
-    this.paths.forEach((path) => {
-      path.forEach((point, i) => {
-        if (i > 0) {
-          context.beginPath();
-          context.strokeStyle = 'green';
-          context.lineWidth = 15;
-          context.moveTo(path[i - 1].x, path[i - 1].y);
-          context.lineTo(point.x, point.y);
-          context.stroke();
-        }
-      });
+    this.edges.forEach((edge) => {
+      context.beginPath();
+      context.strokeStyle = 'green';
+      context.lineWidth = 3;
+      context.moveTo(edge.a.x, edge.a.y);
+      context.lineTo(edge.b.x, edge.b.y);
+      context.stroke();
     });
+  }
 
+  save() {
     const json = JSON.stringify(
       {
-        paths: this.paths,
+        nodes: this.nodes,
+        edges: this.edges,
         blocks: this.blocks,
       },
       null,
@@ -281,8 +282,3 @@ export class LayoutPage {
     return value * (Math.PI / 180);
   }
 }
-
-type Point = {
-  x: number;
-  y: number;
-};

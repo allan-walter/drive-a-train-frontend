@@ -12,8 +12,6 @@ export class InfoHub extends BaseHub {
 
     this.connection.on('info', (info) => {
       this.videoService.data.update((x) => ({ ...x, info }));
-      console.log(info);
-      console.log(this.videoService.data().info.turnoutLocations);
     });
   }
 }

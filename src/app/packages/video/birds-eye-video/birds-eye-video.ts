@@ -3,10 +3,11 @@ import { Video } from '../video/video';
 import { VideoService } from '../video-page/video-service';
 import { Config } from '../../common/config';
 import { Markers } from './markers/markers';
+import { Sizer } from '../../sizer/sizer';
 
 @Component({
   selector: 'app-birds-eye-video',
-  imports: [Video, Markers],
+  imports: [Video, Markers, Sizer],
   templateUrl: './birds-eye-video.html',
   styleUrl: './birds-eye-video.css',
 })
