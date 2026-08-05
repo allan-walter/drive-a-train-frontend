@@ -1,13 +1,3 @@
-<div #container class="relative h-full bg-black">
-<!--  <app-video [size]="videoService.data().info!" [url]="config.povVideoEndpoint" [url2]="config"></app-video>-->
-
-  <div class="h-full w-full flex items-center justify-center absolute left-0 top-0">
-    <div #overlay class="w-full h-full relative">
-      <!--      <Markers bind:throttleLimits></Markers>-->
-    </div>
-  </div>
-
-  <div class="absolute left-0 top-0">
-    <!--    <Translate></Translate>-->
-  </div>
+<div class="w-[300px] aspect-4/3">
+  <app-video [url]="config.povVideoEndpoint"></app-video>
 </div>
