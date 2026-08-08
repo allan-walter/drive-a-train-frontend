@@ -28,6 +28,12 @@
         <p>
           Right click to deselect (for creating a separate path)
         </p>
+        <div>
+          Set speed
+          <button (click)="setSpeed('NORMAL')">NORMAL</button>
+          <button (click)="setSpeed('SLOW')">SLOW</button>
+          <button (click)="setSpeed('STOP')">STOP</button>
+        </div>
 
         <button (click)="deleteSelected()">Delete Selected</button>
         <button (click)="save()">Save</button>

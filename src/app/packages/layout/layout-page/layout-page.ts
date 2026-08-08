@@ -5,22 +5,25 @@ import { VideoService } from '../../video/video-page/video-service';
 import { InfoHub } from '../../../hubs/info-hub';
 import { form, FormField } from '@angular/forms/signals';
 import { Sizer } from '../../sizer/sizer';
+import { uuidv4 } from '../../../crypto';
 
 type Node = {
+  id: string;
+  point: Point;
+  speed: Speed;
+};
+
+type Point = {
   x: number;
   y: number;
 };
 
 type Edge = {
-  a: Node;
-  b: Node;
+  a: string;
+  b: string;
 };
 
-type Block = {
-  point: Node;
-  distance: number;
-};
-
+type Speed = 'NORMAL' | 'SLOW' | 'STOP';
 @Component({
   selector: 'app-layout-page',
   imports: [Video, FormField, Sizer],
@@ -37,14 +40,12 @@ export class LayoutPage {
 
   // A flat list of points. So joining paths can have their intersection moved as one piece
   nodes = Array<Node>();
-  blocks = new Array<Block>();
 
   // These need to exist in the main flat points list
   edges = new Array<Edge>();
 
   isDragging = false;
   selected?: Node;
-  selectedBlock?: Block;
 
   jsonModel = signal({ json: '' });
   jsonForm = form(this.jsonModel);
@@ -76,27 +77,7 @@ export class LayoutPage {
 
     this.draw();
 
-    let lastMousePosition: Node | undefined;
-
-    window.addEventListener(
-      'keydown',
-      (e) => {
-        if (e.code == 'Space') {
-          e.preventDefault();
-          if (e.repeat || lastMousePosition == null) return;
-
-          this.blocks.push({
-            point: lastMousePosition,
-            distance: 30,
-          });
-
-          untracked(() => {
-            this.draw();
-          });
-        }
-      },
-      { passive: false },
-    );
+    let lastMousePosition: Point | undefined;
 
     canvas.addEventListener('contextmenu', (e) => {
       this.selected = undefined;
@@ -123,8 +104,8 @@ export class LayoutPage {
 
       if (!this.isDragging || !this.selected) return;
 
-      this.selected.x = lastMousePosition.x;
-      this.selected.y = lastMousePosition.y;
+      this.selected.point.x = lastMousePosition.x;
+      this.selected.point.y = lastMousePosition.y;
 
       this.draw();
     });
@@ -142,7 +123,11 @@ export class LayoutPage {
       }
 
       const prev = this.selected;
-      this.selected = this.getPointClick(position) ?? { x: position.x, y: position.y };
+      this.selected = this.getPointClick(position) ?? {
+        id: uuidv4(),
+        point: { x: position.x, y: position.y },
+        speed: 'NORMAL',
+      };
       this.nodes.push(this.selected);
 
       if (prev == null) {
@@ -151,8 +136,8 @@ export class LayoutPage {
       }
 
       this.edges.push({
-        a: prev,
-        b: this.selected,
+        a: prev.id,
+        b: this.selected.id,
       });
 
       this.draw();
@@ -166,12 +151,7 @@ export class LayoutPage {
       try {
         const obj = JSON.parse(this.jsonModel().json);
         this.nodes = obj.nodes ?? [];
-        // These need to be actually from the nodes list so if a node position is updated the edge updates too
-        this.edges = (obj.edges ?? []).map((e: any) => ({
-          a: this.nodes.find((n) => n.x == e.a.x && n.y == e.a.y),
-          b: this.nodes.find((n) => n.x == e.b.x && n.y == e.b.y),
-        }));
-        this.blocks = obj.blocks ?? [];
+        this.edges = obj.edges ?? [];
         untracked(() => {
           this.draw();
         });
@@ -184,9 +164,9 @@ export class LayoutPage {
     });
   }
 
-  getPointClick(position: Node) {
+  getPointClick(position: Point) {
     return this.nodes.find((p) =>
-      this.closeTo(p, { x: position.x, y: position.y }, this.arcRadius),
+      this.closeTo(p.point, { x: position.x, y: position.y }, this.arcRadius),
     );
     // return this.layout
     //   .map((row) => [
@@ -196,7 +176,7 @@ export class LayoutPage {
     //   .find(([p]) => p) as [Point, Array<Point>] | undefined;
   }
 
-  closeTo(a: Node, b: Node, dist: number) {
+  closeTo(a: Point, b: Point, dist: number) {
     const dx = a.x - b.x;
     const dy = a.y - b.y;
     return dx * dx + dy * dy <= dist * dist;
@@ -215,6 +195,14 @@ export class LayoutPage {
     return { x: Math.floor(x), y: Math.floor(y) };
   }
 
+  setSpeed(speed: Speed) {
+    if (this.selected == null) return;
+
+    this.selected.speed = speed;
+
+    this.draw();
+  }
+
   draw() {
     const canvas = this.canvas()?.nativeElement;
     if (!canvas) {
@@ -225,28 +213,21 @@ export class LayoutPage {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    this.blocks.forEach((block) => {
-      context.beginPath();
-      context.fillStyle = 'red';
-      context.arc(block.point.x, block.point.y, this.arcRadius, 0, this.radians(360));
-      context.fill();
-
-      context.beginPath();
-      context.fillStyle = 'rgb(255 0 0 / 0.21)';
-      context.arc(block.point.x, block.point.y, block.distance, 0, this.radians(360));
-      context.fill();
-    });
-
     // Points
     this.nodes.forEach((node) => {
       context.beginPath();
+
       if (this.selected == node) {
-        context.fillStyle = this.isDragging ? 'blue' : 'orange';
+        context.fillStyle = this.isDragging ? 'blue' : 'gray';
+      } else if (node.speed == 'STOP') {
+        context.fillStyle = 'red';
+      } else if (node.speed == 'SLOW') {
+        context.fillStyle = 'orange';
       } else {
         context.fillStyle = 'green';
       }
 
-      context.arc(node.x, node.y, this.arcRadius, 0, this.radians(360));
+      context.arc(node.point.x, node.point.y, this.arcRadius, 0, this.radians(360));
       context.fill();
     });
 
@@ -255,8 +236,10 @@ export class LayoutPage {
       context.beginPath();
       context.strokeStyle = 'green';
       context.lineWidth = 3;
-      context.moveTo(edge.a.x, edge.a.y);
-      context.lineTo(edge.b.x, edge.b.y);
+      const a = this.nodes.find((n) => n.id == edge.a)!;
+      context.moveTo(a.point.x, a.point.y);
+      const b = this.nodes.find((n) => n.id == edge.b)!;
+      context.lineTo(b.point.x, b.point.y);
       context.stroke();
     });
   }
@@ -266,7 +249,6 @@ export class LayoutPage {
       {
         nodes: this.nodes,
         edges: this.edges,
-        blocks: this.blocks,
       },
       null,
       2,

@@ -1,10 +1,7 @@
 import { Component, effect, ElementRef, inject, input, signal, viewChild } from '@angular/core';
-import { VideoService } from '../video-page/video-service';
-import { LayoutBuilder } from '../../layout/layout-page/layout-builder/layout-builder';
 
 @Component({
   selector: 'app-video',
-  imports: [LayoutBuilder],
   templateUrl: './video.html',
   styleUrl: './video.css',
 })
